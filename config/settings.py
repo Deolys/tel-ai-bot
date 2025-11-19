@@ -1,0 +1,27 @@
+import os
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+
+load_dotenv()
+
+
+class Settings(BaseSettings):
+    telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    openrouter_api_key: str = os.getenv("OPENROUTER_API_KEY", "")
+
+    supabase_url: str = os.getenv("SUPABASE_URL", "")
+    supabase_key: str = os.getenv("SUPABASE_KEY", "")
+
+    ai_model: str = os.getenv("AI_MODEL", "deepseek/deepseek-chat")
+    ai_max_tokens: int = int(os.getenv("AI_MAX_TOKENS", "1000"))
+    ai_temperature: float = float(os.getenv("AI_TEMPERATURE", "0.7"))
+
+    log_level: str = os.getenv("LOG_LEVEL", "INFO")
+
+    max_context_messages: int = 10
+
+    class Config:
+        case_sensitive = False
+
+
+settings = Settings()
