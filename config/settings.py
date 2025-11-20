@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
     max_context_messages: int = 10
+    default_language: str = os.getenv("DEFAULT_LANGUAGE", "ru")
 
     class Config:
         case_sensitive = False

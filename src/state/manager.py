@@ -4,6 +4,7 @@ from datetime import datetime
 # from supabase import create_client, Client
 from config.settings import settings
 from src.utils.exceptions import StateManagerError
+from src.localization.messages import normalize_language_code
 
 logger = logging.getLogger(__name__)
 
@@ -20,21 +21,35 @@ class StateManager:
         self,
         telegram_user_id: int,
         username: str = "",
-        first_name: str = ""
+        first_name: str = "",
+        language_code: Optional[str] = None,
     ) -> Dict:
         try:
             # Проверяем, существует ли сессия
             if telegram_user_id in self.sessions:
+                session = self.sessions[telegram_user_id]
+
+                # Обновляем язык, если он изменился
+                if language_code:
+                    normalized_lang = normalize_language_code(language_code)
+                    if session.get("language") != normalized_lang:
+                        session["language"] = normalized_lang
+                        logger.info(
+                            f"Updated language for user {telegram_user_id} to {normalized_lang}"
+                        )
+
                 logger.info(f"Found existing session for user {telegram_user_id}")
-                return self.sessions[telegram_user_id]
+                return session
 
             # Создаем новую сессию
             session_id = f"session_{telegram_user_id}_{datetime.now().timestamp()}"
+            normalized_lang = normalize_language_code(language_code)
             new_session = {
                 "id": session_id,
                 "telegram_user_id": telegram_user_id,
                 "username": username,
                 "first_name": first_name,
+                 "language": normalized_lang,
                 "conversation_context": {},
                 "created_at": datetime.now().isoformat()
             }
@@ -122,6 +137,21 @@ class StateManager:
         except Exception as e:
             logger.error(f"Error resetting conversation: {e}")
             raise StateManagerError(f"Failed to reset conversation: {str(e)}")
+
+    async def get_user_language(self, telegram_user_id: int) -> str:
+        """
+        Возвращает язык пользователя из сессии или язык по умолчанию.
+        """
+        try:
+            session = self.sessions.get(telegram_user_id)
+            if session and "language" in session:
+                return session["language"]
+
+            return settings.default_language
+
+        except Exception as e:
+            logger.error(f"Error getting user language: {e}")
+            return settings.default_language
 
     async def update_session_context(
         self,
