@@ -26,7 +26,8 @@ class BotCommands:
 
         lang = session.get("language", user_lang)
 
-        welcome_message = t(lang, "start_welcome", first_name=user.first_name or "")
+        welcome_message = t(lang, "start_welcome",
+                            first_name=user.first_name or "")
 
         await update.message.reply_text(welcome_message)
         logger.info(f"User {user.id} started the bot")
@@ -68,6 +69,7 @@ class BotCommands:
             logger.info(f"User {user.id} reset conversation")
 
         except Exception as e:
-            logger.error(f"Error resetting conversation for user {user.id}: {e}")
+            logger.error(
+                f"Error resetting conversation for user {user.id}: {e}")
             lang = await self.state_manager.get_user_language(user.id) or user_lang
             await update.message.reply_text(t(lang, "reset_error"))

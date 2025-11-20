@@ -73,8 +73,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
             "*Технологии:*\n"
             "• Python 3.11+\n"
             "• python-telegram-bot\n"
-            "• DeepSeek AI (OpenRouter)\n"
-            "• Supabase Database\n\n"
+            "• DeepSeek AI (OpenRouter)\n\n"
             "Версия: 1.0.0"
         ),
         "reset_success": (
@@ -131,8 +130,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
             "*Tech stack:*\n"
             "• Python 3.11+\n"
             "• python-telegram-bot\n"
-            "• DeepSeek AI (OpenRouter)\n"
-            "• Supabase Database\n\n"
+            "• DeepSeek AI (OpenRouter)\n\n"
             "Version: 1.0.0"
         ),
         "reset_success": (
@@ -159,12 +157,11 @@ def t(lang: str | None, key: str, **kwargs) -> str:
     if text is None:
         # Пытаемся взять из английского как запасной вариант
         text = TRANSLATIONS.get("en", {}).get(key, key)
-        logger.warning(f"Missing translation for key '{key}' in language '{normalized}'")
+        logger.warning(
+            f"Missing translation for key '{key}' in language '{normalized}'")
 
     try:
         return text.format(**kwargs)
     except Exception:
         # Если форматирование не удалось — возвращаем как есть
         return text
-
-
