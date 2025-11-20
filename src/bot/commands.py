@@ -63,7 +63,6 @@ class BotCommands:
             "• Python 3.11+\n"
             "• python-telegram-bot\n"
             "• DeepSeek AI (OpenRouter)\n"
-            "• Supabase Database\n\n"
             "Версия: 1.0.0"
         )
 

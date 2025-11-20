@@ -40,11 +40,6 @@ def main():
         logger.error("OPENROUTER_API_KEY is not set")
         raise ValueError("OPENROUTER_API_KEY is required")
 
-    # Supabase временно отключен - используется хранилище в памяти
-    # if not settings.supabase_url or not settings.supabase_key:
-    #     logger.error("Supabase credentials are not set")
-    #     raise ValueError("SUPABASE_URL and SUPABASE_KEY are required")
-
     ai_client = AIClient()
     state_manager = StateManager()
     content_filter = ContentFilter()
