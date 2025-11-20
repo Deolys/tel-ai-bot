@@ -1,11 +1,12 @@
 def format_ai_response(response: str) -> str:
+    """
+    Форматирует ответ от AI.
+    Примечание: разбиение длинных сообщений происходит в handlers.py с помощью split_message()
+    """
     if not response:
         return "Извините, не удалось получить ответ."
 
     response = response.strip()
-
-    if len(response) > 4000:
-        response = response[:3997] + "..."
 
     return response
 

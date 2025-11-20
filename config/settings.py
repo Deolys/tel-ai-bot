@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     supabase_key: str = os.getenv("SUPABASE_KEY", "")
 
     ai_model: str = os.getenv("AI_MODEL", "deepseek/deepseek-chat")
-    ai_max_tokens: int = int(os.getenv("AI_MAX_TOKENS", "1000"))
+    ai_max_tokens: int = int(os.getenv("AI_MAX_TOKENS", "4000"))
     ai_temperature: float = float(os.getenv("AI_TEMPERATURE", "0.7"))
 
     log_level: str = os.getenv("LOG_LEVEL", "INFO")

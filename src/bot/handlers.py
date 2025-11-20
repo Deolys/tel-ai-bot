@@ -8,6 +8,7 @@ from src.filters.content_filter import ContentFilter
 from src.bot.middleware import MessageMiddleware
 from src.utils.logger import log_user_interaction, log_bot_response
 from src.utils.exceptions import AIClientError, StateManagerError
+from src.utils.message_splitter import split_message
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,10 @@ class MessageHandler:
                 content=formatted_response
             )
 
-            await update.message.reply_text(formatted_response)
+            message_parts = split_message(formatted_response)
+            for part in message_parts:
+                await update.message.reply_text(part)
+            
             log_bot_response(user.id, formatted_response)
 
         except AIClientError as e:
