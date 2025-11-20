@@ -38,10 +38,10 @@ class StateManager:
                 "conversation_context": {},
                 "created_at": datetime.now().isoformat()
             }
-            
+
             self.sessions[telegram_user_id] = new_session
             self.messages[session_id] = []
-            
+
             logger.info(f"Created new session for user {telegram_user_id}")
             return new_session
 
@@ -59,13 +59,13 @@ class StateManager:
             # Сохраняем сообщение в памяти
             if session_id not in self.messages:
                 self.messages[session_id] = []
-            
+
             message = {
                 "role": role,
                 "content": content,
                 "created_at": datetime.now().isoformat()
             }
-            
+
             self.messages[session_id].append(message)
             logger.debug(f"Saved message for session {session_id}")
 
