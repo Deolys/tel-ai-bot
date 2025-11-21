@@ -55,7 +55,7 @@ def main():
     application.add_handler(CommandHandler("reset", bot_commands.reset_command))
 
     application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler.handle_message)
+        MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler.start_handle_message)
     )
 
     application.add_error_handler(error_handler)

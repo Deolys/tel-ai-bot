@@ -6,75 +6,75 @@ from typing import List
 TELEGRAM_MAX_MESSAGE_LENGTH = 4096
 
 
-def split_message(text: str, max_length: int = TELEGRAM_MAX_MESSAGE_LENGTH) -> List[str]:
+def split_message(text: str, max_size: int = 4090) -> list[str]:
     """
-    Разбивает длинное сообщение на части, не превышающие максимальную длину.
-    Старается разбивать по абзацам и предложениям для сохранения читабельности.
-    
+    Разделяет длинное сообщение с Markdown-разметкой на части для Telegram.
+
+    Функция разбивает текст на чанки, размер которых не превышает max_size.
+    Она отслеживает состояние блоков кода (```) и, если разрыв происходит
+    внутри такого блока, корректно закрывает его в текущем чанке с помощью '```
+    и заново открывает в следующем.
+
     Args:
-        text: Текст для разбиения
-        max_length: Максимальная длина одной части (по умолчанию 4096 для Telegram)
-    
+        text: Входной текст с Markdown-разметкой.
+        max_size: Максимальный размер одного чанка (по умолчанию 4096).
+
     Returns:
-        Список строк, каждая не превышает max_length
+        Список строк (чанков), готовых к отправке.
     """
-    if len(text) <= max_length:
-        return [text]
-    
+    if not text:
+        return []
+
     chunks = []
+    lines = text.split('\n')
     current_chunk = ""
-    
-    paragraphs = text.split('\n\n')
-    
-    for paragraph in paragraphs:
-        if len(paragraph) > max_length:
-            sentences = paragraph.replace('! ', '!|').replace('? ', '?|').replace('. ', '.|').split('|')
+    is_in_code_block = False
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        
+        # Определяем, является ли строка переключателем блока кода
+        is_toggler = line.strip().startswith('```')
+
+        # Заранее резервируем место для закрывающих '```
+        # если мы находимся внутри блока кода. Это 4 символа: '\n' + '```'.
+        closing_tags_len = 4 if is_in_code_block else 0
+        
+        # Длина разделителя (перенос строки)
+        separator_len = 1 if current_chunk else 0
+
+        # Проверяем, превысит ли добавление новой строки лимит
+        if len(current_chunk) + separator_len + len(line) > max_size - closing_tags_len:
+            # --- Чанк заполнен, финализируем его ---
+            chunk_to_add = current_chunk
+            if is_in_code_block:
+                chunk_to_add += '\n```'
             
-            for sentence in sentences:
-                if len(sentence) > max_length:
-                    words = sentence.split(' ') if ' ' in sentence else []
-                    
-                    if words:
-                        temp_sentence = ""
-                        for word in words:
-                            if len(temp_sentence) + len(word) + 1 <= max_length:
-                                temp_sentence += (word + ' ')
-                            else:
-                                if temp_sentence:
-                                    chunks.append(temp_sentence.rstrip())
-                                if len(word) > max_length:
-                                    for i in range(0, len(word), max_length):
-                                        chunks.append(word[i:i + max_length])
-                                    temp_sentence = ""
-                                else:
-                                    temp_sentence = word + ' '
-                        
-                        if temp_sentence:
-                            if current_chunk and len(current_chunk) + len(temp_sentence) <= max_length:
-                                current_chunk += temp_sentence
-                            else:
-                                if current_chunk:
-                                    chunks.append(current_chunk.rstrip())
-                                current_chunk = temp_sentence
-                    else:
-                        for i in range(0, len(sentence), max_length):
-                            chunks.append(sentence[i:i + max_length])
-                else:
-                    if current_chunk and len(current_chunk) + len(sentence) + 1 <= max_length:
-                        current_chunk += (sentence + ' ')
-                    else:
-                        if current_chunk:
-                            chunks.append(current_chunk.rstrip())
-                        current_chunk = sentence + ' '
-        else:
-            if current_chunk and len(current_chunk) + len(paragraph) + 2 <= max_length:
-                current_chunk += (paragraph + '\n\n')
-            else:
-                if current_chunk:
-                    chunks.append(current_chunk.rstrip())
-                current_chunk = paragraph + '\n\n'
-    
+            chunks.append(chunk_to_add)
+
+            # --- Начинаем новый чанк ---
+            # Если мы были в блоке кода, новый чанк должен с него начинаться
+            current_chunk = '```' if is_in_code_block else ''
+            
+            # Используем `continue`, чтобы текущая строка обработалась заново
+            # и была добавлена уже в новый чанк.
+            continue
+
+        # --- Строка помещается, добавляем ее в текущий чанк ---
+        if current_chunk:
+            current_chunk += '\n'
+        current_chunk += line
+
+        # После добавления строки обновляем состояние блока кода, если нужно
+        if is_toggler:
+            is_in_code_block = not is_in_code_block
+
+        # Переходим к следующей строке
+        i += 1
+
+    # Добавляем последний оставшийся чанк
     if current_chunk:
-        chunks.append(current_chunk.rstrip())
-    
+        chunks.append(current_chunk)
+
     return chunks
