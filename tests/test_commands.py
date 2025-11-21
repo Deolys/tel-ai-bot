@@ -9,6 +9,7 @@ async def test_start_command(mock_state_manager, sample_user):
 
     update = MagicMock()
     update.effective_user = sample_user
+    update.effective_user.language_code = "ru"
     update.message.reply_text = AsyncMock()
 
     context = MagicMock()
@@ -18,7 +19,8 @@ async def test_start_command(mock_state_manager, sample_user):
     mock_state_manager.get_or_create_session.assert_called_once_with(
         telegram_user_id=sample_user.id,
         username=sample_user.username,
-        first_name=sample_user.first_name
+        first_name=sample_user.first_name,
+        language_code="ru"
     )
 
     update.message.reply_text.assert_called_once()
@@ -33,9 +35,12 @@ async def test_help_command(mock_state_manager, sample_user):
 
     update = MagicMock()
     update.effective_user = sample_user
+    update.effective_user.language_code = "ru"
     update.message.reply_text = AsyncMock()
 
     context = MagicMock()
+
+    mock_state_manager.get_user_language = AsyncMock(return_value="ru")
 
     await commands.help_command(update, context)
 
@@ -52,9 +57,12 @@ async def test_about_command(mock_state_manager, sample_user):
 
     update = MagicMock()
     update.effective_user = sample_user
+    update.effective_user.language_code = "ru"
     update.message.reply_text = AsyncMock()
 
     context = MagicMock()
+
+    mock_state_manager.get_user_language = AsyncMock(return_value="ru")
 
     await commands.about_command(update, context)
 
@@ -70,9 +78,12 @@ async def test_reset_command(mock_state_manager, sample_user):
 
     update = MagicMock()
     update.effective_user = sample_user
+    update.effective_user.language_code = "ru"
     update.message.reply_text = AsyncMock()
 
     context = MagicMock()
+
+    mock_state_manager.get_user_language = AsyncMock(return_value="ru")
 
     await commands.reset_command(update, context)
 
