@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, patch, Mock
 from src.ai.client import AIClient
 from src.utils.exceptions import AIClientError
 
@@ -9,7 +9,7 @@ async def test_ai_client_successful_response():
     client = AIClient()
 
     mock_response = AsyncMock()
-    mock_response.json.return_value = {
+    mock_response.json = Mock(return_value={
         "choices": [
             {
                 "message": {
@@ -17,8 +17,8 @@ async def test_ai_client_successful_response():
                 }
             }
         ]
-    }
-    mock_response.raise_for_status = AsyncMock()
+    })
+    mock_response.raise_for_status = Mock()
 
     with patch("httpx.AsyncClient") as mock_http_client:
         mock_client_instance = AsyncMock()
@@ -41,8 +41,8 @@ async def test_ai_client_empty_response():
     client = AIClient()
 
     mock_response = AsyncMock()
-    mock_response.json.return_value = {"choices": []}
-    mock_response.raise_for_status = AsyncMock()
+    mock_response.json = Mock(return_value={"choices": []})
+    mock_response.raise_for_status = Mock()
 
     with patch("httpx.AsyncClient") as mock_http_client:
         mock_client_instance = AsyncMock()

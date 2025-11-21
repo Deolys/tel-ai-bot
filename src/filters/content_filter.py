@@ -2,6 +2,7 @@ import logging
 from better_profanity import profanity
 from src.filters.stopwords import ALL_STOPWORDS
 from src.utils.exceptions import ContentFilterError
+from src.localization.messages import t
 
 logger = logging.getLogger(__name__)
 
@@ -27,16 +28,16 @@ class ContentFilter:
             logger.error(f"Error censoring text: {e}")
             return text
 
-    def validate_message(self, text: str) -> tuple[bool, str]:
+    def validate_message(self, text: str, lang: str | None = None) -> tuple[bool, str]:
         if not text or len(text.strip()) == 0:
-            return False, "Пустое сообщение не может быть обработано."
+            return False, t(lang, "empty_message")
 
         if len(text) > 4000:
-            return False, "Сообщение слишком длинное. Максимум 4000 символов."
+            return False, t(lang, "message_too_long")
 
         if self.contains_profanity(text):
             logger.warning("Profanity detected in message")
-            return False, "Ваше сообщение содержит недопустимые выражения. Пожалуйста, используйте корректный язык."
+            return False, t(lang, "message_has_profanity")
 
         return True, ""
 

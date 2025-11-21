@@ -40,10 +40,6 @@ def main():
         logger.error("OPENROUTER_API_KEY is not set")
         raise ValueError("OPENROUTER_API_KEY is required")
 
-    if not settings.supabase_url or not settings.supabase_key:
-        logger.error("Supabase credentials are not set")
-        raise ValueError("SUPABASE_URL and SUPABASE_KEY are required")
-
     ai_client = AIClient()
     state_manager = StateManager()
     content_filter = ContentFilter()
@@ -59,7 +55,7 @@ def main():
     application.add_handler(CommandHandler("reset", bot_commands.reset_command))
 
     application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler.handle_message)
+        MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler.start_handle_message)
     )
 
     application.add_error_handler(error_handler)

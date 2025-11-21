@@ -5,7 +5,7 @@ Telegram бот с интеграцией AI агента (DeepSeek через O
 ## Возможности
 
 - Диалог с AI агентом (DeepSeek)
-- Хранение контекста диалога в Supabase
+- Хранение контекста диалога
 - Базовые команды: /start, /help, /about, /reset
 - Фильтрация нецензурного контента
 - Обработка ошибок и логирование
@@ -18,7 +18,6 @@ Telegram бот с интеграцией AI агента (DeepSeek через O
 1. Python 3.11+
 2. Telegram Bot Token (получить через [@BotFather](https://t.me/botfather))
 3. OpenRouter API ключ (получить на [openrouter.ai](https://openrouter.ai))
-4. Supabase проект (для хранения контекста)
 
 ### Локальная установка
 
